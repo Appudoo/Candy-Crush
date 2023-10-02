@@ -24,15 +24,19 @@ public class boradGenrator : MonoBehaviour
             for (int j = 0; j < rows; j++)
             {
                 int r = Random.Range(0, allPrefabs.Length);
-                //Vector2 pos = new Vector2(i, j);
-                while (!isValid)
+              
+                do
                 {
-                    isValid = !CheckCandiesInRow(i, j, r) && !CheckCandiesInColumn(i, j, r);
                     r = Random.Range(0, allPrefabs.Length);
+                    isValid = !CheckCandiesInRow(i, j, r) && !CheckCandiesInColumn(i, j, r);
                 }
+                while (!isValid);
+
 
                 Vector2 pos = new Vector2(i, j);
                 GameObject g = Instantiate(allPrefabs[r], pos, Quaternion.identity);
+                g.transform.SetParent(transform);
+                g.name="("+j+","+i+")";
                 allCandies[i, j] = g;
             }
         }
@@ -44,12 +48,10 @@ public class boradGenrator : MonoBehaviour
 
     bool CheckCandiesInColumn(int cols, int rows, int r)
     {
-        // Check candies to the left
-        if (cols >= 2 && allCandies[cols - 1, rows].CompareTag(allPrefabs[r].tag) && allCandies[cols - 2, rows].CompareTag(allPrefabs[r].tag))
+        if (cols >= 2 && allCandies[cols - 1, rows].tag == allPrefabs[r].tag && allCandies[cols - 2, rows].tag==(allPrefabs[r].tag))
             return true;
 
-        // Check candies to the right
-        if (cols <= cols - 3 && allCandies[cols + 1, rows].CompareTag(allPrefabs[r].tag) && allCandies[cols + 2, rows].CompareTag(allPrefabs[r].tag))
+        if (cols <= cols - 3 && allCandies[cols + 1, rows].tag==(allPrefabs[r].tag) && allCandies[cols + 2, rows].tag==(allPrefabs[r].tag))
             return true;
 
         return false;
@@ -57,13 +59,11 @@ public class boradGenrator : MonoBehaviour
 
     bool CheckCandiesInRow(int cols, int rows, int r)
     {
-        // Check candies above
 
-        if (rows >= 2 && allCandies[cols, rows - 1].CompareTag(allPrefabs[r].tag) && allCandies[cols, rows - 2].CompareTag(allPrefabs[r].tag))
+        if (rows >= 2 && allCandies[cols, rows - 1].tag==(allPrefabs[r].tag) && allCandies[cols, rows - 2].tag==(allPrefabs[r].tag))
             return true;
 
-        // Check candies below
-        if (rows <= rows - 3 && allCandies[cols, rows + 1].CompareTag(allPrefabs[r].tag) && allCandies[cols, rows + 2].CompareTag(allPrefabs[r].tag))
+        if (rows <= rows - 3 && allCandies[cols, rows + 1].tag==(allPrefabs[r].tag) && allCandies[cols, rows + 2].tag==(allPrefabs[r].tag))
             return true;
 
         return false;
