@@ -11,6 +11,9 @@ TagManager:
   - red
   - white
   - yellow
+  - purple
+  - powerCandy
+  - bomb
   layers:
   - Default
   - TransparentFX
