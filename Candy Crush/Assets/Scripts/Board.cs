@@ -7,23 +7,20 @@ public class Board : MonoBehaviour
     public int rows, cols;
     public GameObject[] allPrefabs;
     public GameObject[,] allCandies;
-    public GameObject[,] tempcandy;
     public int nocnt;
     public GameObject powerCandy;
-    public GameObject curMoveCandy;
     powerCandy p;
-    public Sprite blue,red,white,orange,yellow,pink,purpal,green;
- 
-
-    
+    public GameObject CurMoveCandy;
+    public Sprite blue, red, purple, orange, yellow, pink, green, white;
     // Start is called before the first frame update
     void Start()
     {
-        p = FindAnyObjectByType<powerCandy>();
+        //p = FindAnyObjectByType<powerCandy>();
         allCandies = new GameObject[cols, rows];
         generateBoard();
-        tempcandy = allCandies;
     }
+
+    
 
     void generateBoard()
     {
@@ -43,7 +40,7 @@ public class Board : MonoBehaviour
                 g.GetComponent<Candy>().col = i;
                 g.transform.SetParent(transform);
                 g.name = "(" + i + "," + j + ")";
-                allCandies[i, j] = g; 
+                allCandies[i, j] = g;
             }
         }
         genpowerCandy();
@@ -80,9 +77,8 @@ public class Board : MonoBehaviour
     }
     public void destroyMatchCandies()
     {
-
-        Debug.Log("CNT :" + findMatches.inst.matches.Count);
-        if (findMatches.inst.matches.Count > 3)
+        print("CNt = " + findMatches.inst.matches.Count);
+        if(findMatches.inst.matches.Count > 3)
         {
             findMatches.inst.checkForBomb();
         }
@@ -94,15 +90,12 @@ public class Board : MonoBehaviour
                 {
                     if (allCandies[i, j].GetComponent<Candy>().isMatched)
                     {
-                       
-                        findMatches.inst.matches.Add(allCandies[i,j]);
                         Destroy(allCandies[i, j]);
                         allCandies[i, j] = null;
                     }
                 }
             }
         }
-
         findMatches.inst.matches.Clear();
         //Debug.Break();
         StartCoroutine(decreaseRowNum());
@@ -167,7 +160,6 @@ public class Board : MonoBehaviour
                 {
                     if (allCandies[i,j].GetComponent<Candy>().isMatched)
                     {
-
                         destroyMatchCandies();
                     }
                 }
@@ -183,7 +175,7 @@ public class Board : MonoBehaviour
         int randomPosCol = Random.Range(0, cols);
         Debug.Log((rows - 1) + "  " + randomPosCol);
         Destroy(allCandies[randomPosCol, rows - 1]);
-        GameObject g = Instantiate(powerCandy, allCandies[randomPosCol, rows - 1].transform.position, Quaternion.identity); 
+        GameObject g = Instantiate(powerCandy, allCandies[randomPosCol, rows - 1].transform.position, Quaternion.identity);
         g.transform.SetParent(transform);
         g.name = "(" + randomPosCol + "," + (rows - 1) + ")";
         g.GetComponent<Candy>().row = rows - 1;

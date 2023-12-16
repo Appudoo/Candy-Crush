@@ -8,12 +8,12 @@ public class Candy : MonoBehaviour
     public static Candy Instance;
     public int row, col, targetX, targetY, prevRow, prevCol;
     Vector2 firstPos, secondPos, pos;
-    float angle;
-    public GameObject powercandy;
+    public float angle;
+
     public Vector3 worldPos;
-    GameObject oppCandy;
+    public GameObject oppCandy;
     Board board;
-    public bool isMatched;
+    public bool isMatched,isRowBomb,isColBomb;
     public int count = 3;
     // Start is called before the first frame update
     void Start()
@@ -27,7 +27,7 @@ public class Candy : MonoBehaviour
     {
         targetX = col;
         targetY = row;
-        if (Mathf.Abs(targetX - transform.position.x) > 0f)
+        if (Mathf.Abs(targetX - transform.position.x) > 0.1f)
         {
             Vector2 pos = new Vector2(targetX, transform.position.y);
             transform.position = Vector2.Lerp(transform.position, pos, .5f);
@@ -36,7 +36,7 @@ public class Candy : MonoBehaviour
                 board.allCandies[col, row] = this.gameObject;
             }
         }
-        if (Mathf.Abs(targetY - transform.position.y) > 0f)
+        if (Mathf.Abs(targetY - transform.position.y) > 0.1f)
         {
             Vector2 pos = new Vector2(transform.position.x, targetY);
             transform.position = Vector2.Lerp(transform.position, pos, .5f);
@@ -55,7 +55,7 @@ public class Candy : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        board.curMoveCandy = this.gameObject;
+        board.CurMoveCandy = this.gameObject;
         firstPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         print(firstPos);
     }
@@ -67,11 +67,15 @@ public class Candy : MonoBehaviour
     }
     void calculateAngle()
     {
-        Vector2 offset = new Vector2(secondPos.x - firstPos.x, secondPos.y - firstPos.y);
-        angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+        if (Mathf.Abs(secondPos.x-firstPos.x) > 0.5f || Mathf.Abs(secondPos.y-firstPos.y)>0.5f)
+        {
+            Vector2 offset = new Vector2(secondPos.x - firstPos.x, secondPos.y - firstPos.y);
+            angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
 
-        //print(angle);
-        MoveDirection();
+            //print(angle);
+            MoveDirection();
+        }
+        
     }
     void MoveDirection()
     {
@@ -139,11 +143,9 @@ public class Candy : MonoBehaviour
     {
         if (this.tag == "powerCandy" && row == 0)
         {
-            powercandy = this.gameObject;
             manager.inst.noOfpoewer = manager.inst.noOfpoewer - 1;
             isMatched = true;
             board.destroyMatchCandies();
-            board.genpowerCandy();
         }
     }
 
@@ -151,8 +153,6 @@ public class Candy : MonoBehaviour
     {
 
         Debug.Log("CALL");
-        //findMatches.inst.FindMatches();
         board.destroyMatchCandies();
-        //StartCoroutine(checkMatchesCo());
     }
 }

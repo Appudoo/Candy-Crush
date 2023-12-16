@@ -8,15 +8,14 @@ public class findMatches : MonoBehaviour
     public List<GameObject> matches = new List<GameObject>();
     Board board;
     public int col, row;
-    //public bool isMatched;
+    
 
     // Start is called before the first frame update
     void Start()
     {
         inst = this;
         board = FindObjectOfType<Board>();
-        //col = this.GetComponent<Candy>().col;
-        //row = this.GetComponent<Candy>().row;
+      
         col = board.cols;
         row = board.rows;
         Debug.Log("Row = " + row + "  col =  " + col);
@@ -44,11 +43,44 @@ public class findMatches : MonoBehaviour
                         leftCandy.GetComponent<Candy>().isMatched = true;
                         rightCandy.GetComponent<Candy>().isMatched = true;
                         if (!matches.Contains(curCandy))
+                        {
                             matches.Add(curCandy);
+                        }
                         if (!matches.Contains(leftCandy))
+                        {
                             matches.Add(leftCandy);
+                        }
                         if (!matches.Contains(rightCandy))
+                        {
                             matches.Add(rightCandy);
+                        }
+                        if (curCandy.GetComponent<Candy>().isColBomb )
+                        {
+                            
+                            collectCollumCandies(curCandy.GetComponent<Candy>().col);
+                            Debug.Break();
+                        }
+                        if (leftCandy.GetComponent<Candy>().isColBomb)
+                        {
+                            collectCollumCandies(leftCandy.GetComponent<Candy>().col);
+                        }
+                        if (rightCandy.GetComponent<Candy>().isColBomb)
+                        {
+                            collectCollumCandies(rightCandy.GetComponent<Candy>().col);
+                        }
+
+                        if (curCandy.GetComponent<Candy>().isRowBomb)
+                        {
+
+                        }
+                        if (leftCandy.GetComponent<Candy>().isRowBomb)
+                        {
+
+                        }
+                        if (rightCandy.GetComponent<Candy>().isRowBomb)
+                        {
+
+                        }
                     }
 
                 }
@@ -68,33 +100,92 @@ public class findMatches : MonoBehaviour
                         curCandy.GetComponent<Candy>().isMatched = true;
                         downCandy.GetComponent<Candy>().isMatched = true;
                         upCandy.GetComponent<Candy>().isMatched = true;
-                        if(!matches.Contains(curCandy))
-                            matches.Add(curCandy);
                         if (!matches.Contains(downCandy))
-                            matches.Add(    downCandy);
+                        {
+                            matches.Add(downCandy);
+                        }
                         if (!matches.Contains(upCandy))
+                        {
                             matches.Add(upCandy);
+                        }
+                        if (!matches.Contains(curCandy))
+                        {
+                            matches.Add(curCandy);
+                        }   
                     }
 
                 }
             }
         }
     }
+    void collectCollumCandies(int col)
+    {
+        for (int i =0;i<board.rows;i++)
+        {
+            if (!matches.Contains(board.allCandies[col,i]))
+            {
+                board.allCandies[col, i].GetComponent<Candy>().isMatched = true;    
+                matches.Add(board.allCandies[col, i]);
+            }
+            
+        }
+    }
     public void checkForBomb()
     {
-        if(board.curMoveCandy!=null)
+        print("Hedllo out");
+        if (board.CurMoveCandy != null)
         {
-            board.curMoveCandy = null;
-            Debug.Log("don't destroy");
-            board.curMoveCandy.GetComponent<Candy>().isMatched = false;
-            if (board.curMoveCandy.tag == "blue") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.blue;
-            if (board.curMoveCandy.tag == "pink") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.pink;
-            if (board.curMoveCandy.tag == "orange") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.orange;
-            if (board.curMoveCandy.tag == "green") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.green;
-            if (board.curMoveCandy.tag == "purple") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.purpal;
-            if (board.curMoveCandy.tag == "yellow") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.yellow;
-            if (board.curMoveCandy.tag == "red") board.curMoveCandy.GetComponent<SpriteRenderer>().sprite = board.red;
-            board.curMoveCandy.tag = "bomb";
+            print("Hello in");
+            
+            //board.CurMoveCandy.tag = "bomb";
+            if (board.CurMoveCandy.GetComponent<Candy>().isMatched)
+            {
+                board.CurMoveCandy.GetComponent<Candy>().isMatched = false;
+                if (board.CurMoveCandy.tag == "blue") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.blue;
+                if (board.CurMoveCandy.tag == "pink") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.pink;
+                if (board.CurMoveCandy.tag == "orange") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.orange;
+                if (board.CurMoveCandy.tag == "green") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.green;
+                if (board.CurMoveCandy.tag == "purple") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.purple;
+                if (board.CurMoveCandy.tag == "yellow") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.yellow;
+                if (board.CurMoveCandy.tag == "red") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.red;
+                if (board.CurMoveCandy.tag == "white") board.CurMoveCandy.GetComponent<SpriteRenderer>().sprite = board.white;
+                Candy curCan = board.CurMoveCandy.GetComponent<Candy>();
+                if ((curCan.angle <= 45f && curCan.angle >= -45f) || (curCan.angle <= -135f || curCan.angle >= 135f))
+                {
+                    curCan.isRowBomb = true;
+                }
+                else
+                {
+                    curCan.isColBomb = true;
+                }
+            }else if (board.CurMoveCandy.GetComponent<Candy>().oppCandy != null)
+            {
+                Candy oppCandyScr = board.CurMoveCandy.GetComponent<Candy>().oppCandy.GetComponent<Candy>();
+                if (oppCandyScr.isMatched)
+                {
+                    oppCandyScr.isMatched = false;
+                    if (oppCandyScr.gameObject.tag == "blue") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.blue;
+                    if (oppCandyScr.gameObject.tag == "pink") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.pink;
+                    if (oppCandyScr.gameObject.tag == "orange") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.orange;
+                    if (oppCandyScr.gameObject.tag == "green") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.green;
+                    if (oppCandyScr.gameObject.tag == "purple") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.purple;
+                    if (oppCandyScr.gameObject.tag == "yellow") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.yellow;
+                    if (oppCandyScr.gameObject.tag == "red") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.red;
+                    if (oppCandyScr.gameObject.tag == "white") oppCandyScr.gameObject.GetComponent<SpriteRenderer>().sprite = board.white;
+
+                    if ((board.CurMoveCandy.GetComponent<Candy>().angle <= 45f && board.CurMoveCandy.GetComponent<Candy>().angle >= -45f) || (board.CurMoveCandy.GetComponent<Candy>().angle <= -135f || board.CurMoveCandy.GetComponent<Candy>().angle >= 135f))
+                    {
+                        oppCandyScr.isRowBomb = true;
+                        print("Row");
+                    }
+                    else
+                    {
+                        print("Col");
+                        oppCandyScr.isColBomb = true;
+                    }
+                }
+            }
+            board.CurMoveCandy = null;
         }
     }
 }
